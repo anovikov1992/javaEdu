@@ -1,0 +1,88 @@
+TDD
+
+1) Функциональный тест (основные моменты)
+2) SmokeTest (не идёт дым из устройства - отл)
+3) Интеграционный тест (разные части проекта адекватно работают друг с другом)
+4) Unit тестирование - "разрезаем" приложение на "полноценные" независимые куски (например метод, или класс, или группа классов) и проверяем корректность работы. Для подобных тестов существует, например, JUnit
+
+
+Singleton'ы тяжело тестировать (в каждом тесте будет использоваться один и тот же объект)
+
+В идеале тест выглядит так: 
+
+    @Test
+    public void plusUsers() {
+        list.add(new User()); //необходимое действие в одну строчку
+        Assert.assertEquals(expected, actual); //проверка в одну строчку
+    }
+
+----------------------------------------------------------------
+JUnit аннотации
+----------------------------------------------------------------
+
+@BeforeClass
+@AfterClass
+@Before
+@After
+@Test
+@Test(expected = Exception.class)
+@Ignore
+....
+@RunWith(Parameterized.class)   появится возможность параметризировать тесты, разом
+								задавать ряд значений на вход теста
+@RunWith(Theories.class)		формируем теорию, которую проверяем на большом 	
+								объеме данных
+
+----------------------------------------------------------------
+	Assert'ы
+----------------------------------------------------------------
+
+можно использовать ключуевое слово java - assert. Пример: assert actual.equals(expected) : "аргумент исключения", но для JVM в данном случае явно надо включать assert, иначе они не отработают (методы не вызываются) 
+
+Assert.assertEquals(expected, actual)
+Assert.assertTrue(expected.equals(actual))
+assertThat(actual, is expected) - выводит красивый эксепшн (синтаксис с учётом статического испорта)
+assertThat(list, hasItem (expected))
+assertThat(list, anyOf(hasItem (expected), hasItem (expected)))
+!!!!!!
+assumeTrue(!list.isEmpty()) аналог if, если true, то тест дальше выполняется, если нет, то игнорируется
+
+----------------------------------------------------------------
+	Hamcrest
+----------------------------------------------------------------
+
+Раньше был частью какой-то тестовой библиотеки (возможно изиМок). Он вводит концепцию Mather. То есть он проверяет объект, который ему передают true или false. И затем можно добавить описание -->
+boolean matches(Object var1);  void describeMismatch(Object var1, Description var2);
+Вот как он используется в JUnit:
+    public static <T> void assertThat(T actual, Matcher<? super T> matcher) {
+        assertThat("", actual, matcher);
+    }
+----------------------------------------------------------------
+
+Если запустить тестовый класс с аннотацией @RunWith(Parameterized.class), то появится возможность параметризировать тесты, разом задавать ряд значений на вход теста.
+
+@RunWith(Parameterized.class)
+
+----------------------------------------------------------------
+	Mockito
+----------------------------------------------------------------
+Ex: (необходимо прописывать условия when от общего к частоному)
+List<String> list = mock(List.class);
+when(list.get(anyInt)).thenReturn("0");
+when(list.get(eq(5))).thenReturn("A");>>>>
+
+----------------------------------------------------------------
+	Рефлексия в тестировании
+----------------------------------------------------------------
+writeDeclaredField(объект в который кладём значение, "название поля", значение поля, forceAccess(пока хз что))
+
+Ex:
+    @Test
+    public void mm1withWriteDeclaredField() throws IllegalAccessException {
+        Utils utils = new Utils();
+        Service service = mock(Service.class);
+        writeDeclaredField(utils, "service", service, true);
+        when(service.reverse(listMock)).thenReturn(listMock);
+        MyClass myClass = new MyClass(utils);
+        assertEquals("[8, 9, 10]", myClass.mm1(listMock));
+    }

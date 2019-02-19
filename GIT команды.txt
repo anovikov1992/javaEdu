@@ -1,0 +1,59 @@
+Глобальные переменные   git config --global user.name "Your Name"
+						git config --global user.email "your_email@whatever.com"
+						
+Инициализация репо		git init
+
+Коммит					git commit -m "First Commit"
+
+Список произведенных 
+изменений				git log ;  git log --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short
+
+Аллиасы					  co = checkout
+							ci = commit
+							st = status
+							br = branch
+							hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+							type = cat-file -t
+							dump = cat-file -p
+
+Создание tag			git tag v1
+
+Tag для предыдущей		git checkout v1^ или v1~1
+версии
+
+Отмена комита			git revert HEAD
+
+Сброс коммита к 		git reset --hard v1 или git reset HEAD
+предыдущему
+
+Удаление тега			git tag -d oops
+
+Изменение предыдущего	git commit --amend -m "Add an author/email comment"
+коммита
+
+Перемещение файлов		git mv <имя файла> <директория>
+
+Отобразить дерево		git dump (см. алиасы)
+
+Перебазирование			git rebase <имя ветки>
+
+Клонирование			git clone <имя репо который клонируем> <имя нового репо>
+
+Все ветки увидеть		git branch -a
+
+извлечь коммиты из 		git fetch
+удаленного репо
+
+ветка наблюдения		git branch -track <имя в нашем репо> <имя удаленного репо>
+
+создать удаленный репо	git remote <имя удаленного репо> <адрес>
+
+~						git checkout HEAD~4 к 4ому родителю относительно HEAD
+
+^						git checkout HEAD^ к предыдущему родителю HEAD
+
+git branch -f master HEAD~3 - переместить ветку на 3 комиита вверх относительно HEAD
+
+Перенос коммитов в     git cherry-pick C2 C4
+нужное место
+
