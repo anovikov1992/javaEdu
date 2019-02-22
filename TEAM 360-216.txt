@@ -1,0 +1,214 @@
+D:\project\sbbol\correqts\db\src\main\resources\sql\work\updates\data
+
+----------------------------------------------
+мой скрипт
+----------------------------------------------
+
+CREATE TABLE ORG_CNTR_COMP_BLOCK_HIST (
+	ID			NUMBER	NOT NULL,
+	CONTRACT_ID	NUMBER	NOT NULL,
+	TYPE_ID		NUMBER	NOT NULL,
+	START_DATE	DATE	NOT NULL,
+	COMMENTS	VARCHAR2(255 BYTE),
+	END_DATE	DATE,
+	
+CONSTRAINT PK_ORG_CNTR_COMP_BLOCK_HIST PRIMARY KEY (ID),
+CONSTRAINT FK_ORG_CNTR_COMP_BLOCK_HIST FOREIGN KEY (TYPE_ID) REFERENCES COMPLIANCEBLOCKINGTYPE (ID),
+CONSTRAINT FK_ORG_CNTR_COMP_BLOCK_HIST FOREIGN KEY (CONTRACT_ID) REFERENCES ORGCONTRACT (ID)
+CONSTRAINT FK_ORG_CNTR_COMP_BLOCK_HIST FOREIGN KEY (END_DATE) REFERENCES DBNewman92 (ID)
+);
+
+COMMENT ON TABLE ORG_CNTR_COMPL_BLOCK_HIST IS "Хранение истории блокировок";
+COMMENT ON COLUMN ORG_CNTR_COMPL_BLOCK_HIST.ID IS "Идентификатор блокировки";
+COMMENT ON COLUMN ORG_CNTR_COMPL_BLOCK_HIST.CONTRACT_ID IS "Идентификатор договора ДБО";
+COMMENT ON COLUMN ORG_CNTR_COMPL_BLOCK_HIST.TYPE_ID IS "Тип compliance-блокировки";
+COMMENT ON COLUMN ORG_CNTR_COMPL_BLOCK_HIST.START_DATE IS "Дата установки compliance-блокировки";
+COMMENT ON COLUMN ORG_CNTR_COMPL_BLOCK_HIST.COMMENTS IS "Комментарий при установке compliance-блокировки";
+COMMENT ON COLUMN ORG_CNTR_COMPL_BLOCK_HIST.END_DATE IS "Дата снятия compliance-блокировки";
+
+
+
+----------------------------------------------
+Вопросы:
+----------------------------------------------
+1) По названию полей - надо ли везде прописывать слово BLOCKING? Просто таблица и так говорит о том, что работаем с блокировками, а тут просто так удлинняем названия
+2) Подготовить список изменения названий в соответствии с требованиями к SQL патчам
+3) Задача про создании таблицы, это подразумевает создание Java классов к ней? Entity, dao и т.п.? Или же это уже другая задача?
+
+
+----------------------------------------------
+Требования:
+----------------------------------------------
+Требования к написанию SQL-скриптов
+-) В именах таблиц, колонок и других объектов БД для разделения слов нужно использовать символ "_"
+-) Имена индексов формируются по маске:  UХ/IX+"_"+"имя таблицы"+"_"+"имена колонок", применяя сокращения только там, где необходимо
+-) Имена constraints формируются по маске:  PK/FK/UK/CK/NN+"_"+"имя таблицы"+"_"+"имя колонки", применяя сокращения только там, где необходимо
+
+
+
+----------------------------------------------
+исполнение:
+----------------------------------------------
+
+ ORG_CNTR_COMPL_BLOCK_HIST с колонками:
+
+BLOCKINGID – счетчик, уникальный ключ, ИД записи о блокировке,
+CONTRACTID – ИД договора ДБО,
+BLOCKINGTYPEID – тип комплаенс-блокировки, integer, связь с таблицей COMPLIANCEBLOCKINGTYPE, где хранятся описания для типов блокировок,
+BLOCKINGDATE – Дата установки комплаенс-блокировки,
+BLOCKINGCOMMENT – Комментарий при установке комплаенс-блокировки, VARCHAR2(255 BYTE)
+BLOCKINGENDDATE – Дата снятия комплаенс-блокировки, если снятие уже было произведено, может быть, соответственно, null.
+
+gradlew newpatch -Ppatchname=create_new_table_BLOCK_HIST -Pauthor=ArtemNovikov -Pdescr="Создание новой таблицы по задаче TEAM360-216" -Pmode=ddl
+
+D:\project\sbbol\correqts\db/src/main/resources/sql/work/updates//data/ddl/800012638_create_new_table_BLOCK_HIST.sql was created
+
+
+CREATE TABLE ORG_CNTR_COMPL_BLOCK_HIST (
+	BLOCKINGID		___ ___,
+	CONTRACTID		___ ___,
+	BLOCKINGTYPEID	___ ___,
+	BLOCKINGDATE	___ ___,
+	BLOCKINGCOMMENT	___ ___,
+	BLOCKINGENDDATE	___ ___,
+	);
+	CONSTRAINT PK_PLEDGE_CONTRACT_ORG PRIMARY KEY (CONTRACT_ID, ORG_GUID),
+  CONSTRAINT FK_PLEDGE_CONTRACT_ORG_CNTRC FOREIGN KEY (CONTRACT_ID) REFERENCES PLEDGE_CONTRACT_DICT (ID)
+	
+CREATE INDEX IF NOT EXISTS <name_of_index> ON ORG_CNTR_COMPL_BLOCK_HIST (BLOCKINGID); 
+CREATE INDEX IF NOT EXISTS <name_of_index> ON ORG_CNTR_COMPL_BLOCK_HIST (CONTRACTID);
+
+----------------------------------------------
+изменения 
+----------------------------------------------
+
+Предложения по изменению названия полей:
+
+	ORG_CNTR_COMPL_BLOCK_HIST  	ORG_CNTR_COMP_BLOCK_HIST	Конкретного требования по сокращениям не видел, но Олег говорит, что приянято слово COMPIANCE сокращать 4мя символами, т.е. COMP
+	BLOCKINGID					ID							здесь и во всех остальных полях имеется слово BLOCKING, так как название таблицы уже говорит о том, что работаем с блокироваками, то указывать в каждом поле это излишне, если есть возможность сократить название полей, то мне кажется это улучшило бы читаемость. Также во всех полях необходимо разделить слова "_" в соответствии с требованиями к патчам. 
+	CONTRACTID					CONTRACT_ID
+	BLOCKINGTYPEID				TYPE_ID
+	BLOCKINGDATE				START_DATE
+	BLOCKINGCOMMENT				COMMENT
+	BLOCKINGENDDATE				END_DATE
+	);
+	
+Сейчас	Предлагаю	Комментарий
+ORG_CNTR_COMPL_BLOCK_HIST	ORG_CNTR_COMP_BLOCK_HIST	Конкретного требования по сокращениям не видел, но Олег говорит, что приянято слово COMPIANCE сокращать 4мя символами, т.е. COMP
+BLOCKINGID	ID	здесь и во всех остальных полях имеется слово BLOCKING, так как название таблицы уже говорит о том, что работаем с блокироваками, то указывать в каждом поле это излишне, если есть возможность сократить название полей, то мне кажется это улучшило бы читаемость. Также во всех полях необходимо разделить слова "_" в соответствии с требованиями к патчам.
+CONTRACTID	CONTRACT_ID	
+BLOCKINGTYPEID	TYPE_ID	
+BLOCKINGDATE	START_DATE	
+BLOCKINGCOMMENT	COMMENT	
+BLOCKINGENDDATE	END_DATE	
+
+
+----------------------------------------------
+примеры
+----------------------------------------------
+D:\project\sbbol\correqts\db\src\main\resources\sql\work\updates\data\ddlinsert into DBUpdate(id, author, description, update_date)
+
+values (800008949, 'amakhno', 'Связь между организациями и договорами залога', SYSDATE);
+
+CREATE TABLE PLEDGE_CONTRACT_ORG (
+  CONTRACT_ID NUMBER(38)             NOT NULL,
+  ORG_GUID    VARCHAR2(36)           NOT NULL,
+  ORG_STATUS  NUMBER(10) DEFAULT 1   NOT NULL,
+  ORG_INN     VARCHAR2(12)           NOT NULL,
+
+  CONSTRAINT PK_PLEDGE_CONTRACT_ORG PRIMARY KEY (CONTRACT_ID, ORG_GUID),
+  CONSTRAINT FK_PLEDGE_CONTRACT_ORG_CNTRC FOREIGN KEY (CONTRACT_ID) REFERENCES PLEDGE_CONTRACT_DICT (ID)
+);
+
+COMMENT ON TABLE PLEDGE_CONTRACT_ORG IS 'Связь между организациями и договорами залога';
+COMMENT ON COLUMN PLEDGE_CONTRACT_ORG.CONTRACT_ID IS 'Идентификатор договора залога';
+COMMENT ON COLUMN PLEDGE_CONTRACT_ORG.ORG_GUID IS 'GUID организации';
+COMMENT ON COLUMN PLEDGE_CONTRACT_ORG.ORG_STATUS IS 'Статус организации в договоре залога: 1 - заемщик по кредиту, 2 - заемщик кредита и залогодатель по объекту, 3 - залогодатель по объекту ';
+COMMENT ON COLUMN PLEDGE_CONTRACT_ORG.ORG_INN IS 'ИНН организации';
+
+
+CREATE INDEX IX_PLEDGE_CONTRACT_ORG_ORGGUID ON PLEDGE_CONTRACT_ORG (ORG_GUID);
+
+D:\project\sbbol\correqts\db\src\main\resources\sql\work\updates\data\ddl
+
+insert into DBUpdate(id, author, description, update_date, update_mode)
+values (800009919, 'SBLIZ-Kolokolov-AA', 'Добавление таблицы CR_MEMBER_INVENTORY', SYSDATE, 'DDL');
+
+CREATE TABLE CR_MEMBER_INVENTORY (
+    FIELDSETID                 NUMBER(38) NOT NULL,
+	GUID                       VARCHAR2(36) NOT NULL,
+	MEMBER_GUID           	   VARCHAR2(36) NOT NULL,
+    RESALE_GOODS               NUMBER(19,2),
+    COMMODITY                  NUMBER(19,2),
+    STOCK_GOODS                NUMBER(19,2),
+	OTHER_RESERVES             NUMBER(19,2),
+	
+	CONSTRAINT PK_CR_MEMBER_INVENTORY PRIMARY KEY (FIELDSETID)
+);
+
+
+
+COMMENT ON TABLE CR_MEMBER_INVENTORY IS
+'Товарно-материальные запасы (Остаток по стоимости приобретения/себестоимости)';
+COMMENT ON COLUMN CR_MEMBER_INVENTORY.FIELDSETID IS
+'Служебный идентификатор записи';
+COMMENT ON COLUMN CR_MEMBER_INVENTORY.GUID IS
+'Идентификатор товарно-материальных запасов';
+COMMENT ON COLUMN CR_MEMBER_INVENTORY.MEMBER_GUID IS
+'Идентификатор участника';
+COMMENT ON COLUMN CR_MEMBER_INVENTORY.RESALE_GOODS IS
+'Товары для перепродажи (тыс. руб.)';
+COMMENT ON COLUMN CR_MEMBER_INVENTORY.COMMODITY IS
+'Сырье и материалы (тыс.руб.)';
+COMMENT ON COLUMN CR_MEMBER_INVENTORY.STOCK_GOODS IS
+'Готовая продукция (тыс. руб.)';
+COMMENT ON COLUMN CR_MEMBER_INVENTORY.OTHER_RESERVES IS
+'Прочие запасы (тыс. руб.)';
+
+BEGIN
+	ORA_TOOLS.CREATE_SEQ('CR_MEMBER_INVENTORY_SEQ');
+END;
+/
+
+CREATE INDEX IX_CR_MEMBER_INVENTORY_MEMBER ON
+    CR_MEMBER_INVENTORY ( MEMBER_GUID );
+		
+ALTER TABLE CR_MEMBER_INVENTORY 
+	ADD CONSTRAINT UK_CR_MEMBER_INVENTORY_GUID UNIQUE (GUID);
+
+CREATE TABLE TABLE_CR_MMB_INVENTORY (
+    DOCCONTENTID   INTEGER NOT NULL,
+    TABLEROW       INTEGER NOT NULL,
+    ENTITYID       INTEGER NOT NULL,
+	
+	CONSTRAINT PK_TABLE_CR_MMB_INVENTORY PRIMARY KEY (DOCCONTENTID, TABLEROW)
+);
+
+CREATE UNIQUE INDEX UX_TABLE_CR_MMB_INV_ENT_ID ON
+    TABLE_CR_MMB_INVENTORY (ENTITYID);
+
+COMMENT ON TABLE TABLE_CR_MMB_INVENTORY IS
+'Связи кредитной заявки и товарно-материальных запасов';
+
+COMMENT ON COLUMN TABLE_CR_MMB_INVENTORY.DOCCONTENTID IS
+'Служебный идентификатор записи кредитной заявки';
+
+COMMENT ON COLUMN TABLE_CR_MMB_INVENTORY.TABLEROW IS
+'Порядковый номер';
+
+COMMENT ON COLUMN TABLE_CR_MMB_INVENTORY.ENTITYID IS
+'Служебный идентификатор записи товарно-материальных запасов';
+
+BEGIN
+    ORA_TOOLS.CREATE_SEQ('TABLE_CR_MMB_INVENTORY_SEQ', 0);
+END;
+/
+
+ALTER TABLE TABLE_CR_MMB_INVENTORY
+    ADD CONSTRAINT FK_TABLE_CR_MMB_INV_ENT FOREIGN KEY ( ENTITYID )
+        REFERENCES CR_MEMBER_INVENTORY ( FIELDSETID );
+
+ALTER TABLE TABLE_CR_MMB_INVENTORY
+    ADD CONSTRAINT FK_TABLE_CR_MMB_INV_DOC FOREIGN KEY ( DOCCONTENTID )
+        REFERENCES DOCCONTENT_CREDITREQ_MMB ( DOCID )
+        ON DELETE CASCADE;
