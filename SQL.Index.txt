@@ -1,1 +1,5 @@
 https://www.youtube.com/watch?v=Wn9sMXf6dtg&index=119&list=PLeYxjiX1MAInukqt-0XKbG9qP2j0QovZH - ссылка на плейлист по SQL, там куча видосов, ссылка видет на начало серии именно по индексам
+
+https://ruhighload.com/Индексы+в+mysql - интересная статья
+
+https://oracle-dba.ru/docs/architecture/indexes/ - ИНДЕКСЫ В ОРАКЛ
